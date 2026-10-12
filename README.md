@@ -3,7 +3,7 @@
 # ¡Hola! 👋 Soy ManChoi
 
 **Técnico de Soporte IT N2** con base en Lima, Perú 🇵🇪 — 5+ años gestionando endpoints, identidad y nube.
-Fuera del trabajo construyo sistemas de agentes de IA que corren 24/7 sobre una Raspberry Pi 3.
+Fuera del trabajo construyo sistemas de agentes de IA que corren 24/7 — arrancaron en una Raspberry Pi 3 y hoy corren en un servidor x86_64, sin perder las costumbres que la Pi impuso.
 
 [![GitHub](https://img.shields.io/badge/GitHub-Manxoig-181717?style=for-the-badge&logo=github)](https://github.com/Manxoig)
 
@@ -11,18 +11,32 @@ Fuera del trabajo construyo sistemas de agentes de IA que corren 24/7 sobre una 
 
 ---
 
-### 🌙 En qué ando ahora — backend y automatización en hardware limitado
+### 🌙 En qué ando ahora — un mismo sistema, dos hardware distintos 🖖
 
-Mi laboratorio corre sobre una **Raspberry Pi 3 Model B** headless (Debian 13 *trixie*, aarch64). Trabajar con
-1 GB de RAM obliga a diseñar con disciplina, y de ahí vienen las habilidades que vengo afilando:
+Empezó en una **Raspberry Pi 3 Model B** headless con 1 GB de RAM: ese techo obligó a declarar
+todo presupuesto de memoria, timeout y concurrencia en vez de asumirlo. Hoy el grueso corre en un
+**servidor x86_64** con 15 veces esa RAM, y la Pi quedó de nodo de respaldo — veterana, no
+retirada: cumplió su turno bajo 1 GB de RAM sin pedir más, y eso en esta casa se dice con una
+sola palabra: **Qapla'** 🗡️. El sistema sigue pensando en nodos plural, no en una sola máquina:
+cada límite se declara **por nodo de ejecución**, así que lo que protege a la Pi no asfixia al
+servidor grande, y viceversa. De ese contraste —diseñar primero para lo chico, escalar después a
+lo grande sin reescribir— salieron la mayoría de las habilidades que vengo afilando:
 
-- 🐍 **APIs REST en Python con FastAPI** — diseño de endpoints, validación con Pydantic, servicio por HTTPS/TLS
-- 🗄️ **SQLite en modo WAL** — modelado de datos, migraciones aditivas y grafos de propiedades
-- 🎫 **Máquinas de estado tipo ITIL** — transiciones validadas en un único módulo, sin mutaciones sueltas
-- ⚙️ **Servicios y temporizadores de systemd** en modo usuario, con `journalctl` para diagnóstico
-- 🔒 **Endurecimiento Linux** — firewall UFW, certificados TLS y controles anti-fuga de credenciales
-- 🖥️ **Frontend estático en vanilla JS** — sin build, sin framework, pensado para cargar rápido
-- 🤖 **Orquestación de agentes de IA** — colas de trabajo, reintentos y control de concurrencia
+**Backend y arquitectura**
+- 🐍 **APIs REST en Python con FastAPI**, partidas por dominio (varios routers en vez de un archivo monolítico), con Pydantic para validar y HTTPS/TLS para servir
+- 🗄️ **SQLite en modo WAL** como única fuente de verdad compartida entre procesos independientes, sin broker de mensajes
+- 🎫 **Máquinas de estado explícitas** (estilo ITIL) con una sola función de transición, que rechaza en vez de aplicar en silencio lo que no está en la tabla
+- 🧠 **Grafos de propiedades** para modelar agentes, capacidades y reglas de negocio como datos — un límite se cambia desde una interfaz, no desplegando código
+- 🔀 **Enrutamiento de trabajo por agente**, con desambiguación explícita cuando dos reglas podrían matchear lo mismo
+- 🧩 **Frontend estático en vanilla JS** — sin build, sin framework, con los módulos compartidos (estado→interfaz, navegación, sanitizado de markdown) factorizados una sola vez
+
+**Operación, gobernanza y hardware**
+- ⚙️ **Presupuestos de recursos declarados por nodo de ejecución** (timeout, RAM, concurrencia) para que el mismo código corra seguro tanto en la Pi como en el servidor grande
+- 🔒 **Endurecimiento Linux**: firewall UFW, certificados TLS, y detección activa de credenciales filtradas antes de aceptar un resultado generado por IA
+- ✅ **Puertas humanas auditadas** — nada crítico se publica, cobra o escala sin una aprobación que queda registrada, con su propio veredicto y motivo
+- 🧪 **Pruebas estáticas sobre la arquitectura** (análisis por AST, sin pytest): no sólo corren el código, verifican que nadie viole una invariante de diseño
+- 📡 **Integración con APIs externas con degradación controlada** — si falta una credencial, el sistema lo dice y no inventa un número
+- 🖥️ **systemd en modo usuario** (servicios y timers) con techos de recursos generados por nodo, y migración de una infraestructura ARM64 a x86_64 sin perder continuidad de datos
 
 ---
 
@@ -42,7 +56,7 @@ Mi laboratorio corre sobre una **Raspberry Pi 3 Model B** headless (Debian 13 *t
 ![Terraform](https://img.shields.io/badge/-Terraform-7B42BC?style=flat-square&logo=terraform&logoColor=white)
 ![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-### 🖥️ Stack del laboratorio (Raspberry Pi 3)
+### 🖥️ Stack del laboratorio (Pi 3 + servidor x86_64)
 
 ![Raspberry Pi](https://img.shields.io/badge/-Raspberry%20Pi%203B-A22846?style=flat-square&logo=raspberrypi&logoColor=white)
 ![Debian](https://img.shields.io/badge/-Debian%2013%20trixie-A81D33?style=flat-square&logo=debian&logoColor=white)
@@ -81,6 +95,6 @@ Mi laboratorio corre sobre una **Raspberry Pi 3 Model B** headless (Debian 13 *t
 
 <div align="center">
 
-📍 Lima, Perú &nbsp;·&nbsp; 🐧 CachyOS + KDE Plasma &nbsp;·&nbsp; 🌙 Agentes IA en Raspberry Pi 3 &nbsp;·&nbsp; 🔧 Soporte IT N2
+📍 Lima, Perú &nbsp;·&nbsp; 🐧 CachyOS + KDE Plasma &nbsp;·&nbsp; 🌙 Agentes IA en Pi 3 + x86_64 &nbsp;·&nbsp; 🔧 Soporte IT N2
 
 </div>
